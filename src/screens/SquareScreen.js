@@ -1,22 +1,31 @@
-import React, { useState } from 'react';
+import React, { useReducer } from 'react';
 import { View } from 'react-native';
 import ColorCounter from "../components/ColorCounter";
 
 const COLOR_INCREMENT = 15;
+const reducer = (state, action) => {
+  switch (action.colorToChange) {
+    case 'red':
+      return { ...state, red: action.amount };
+    case 'green':
+      return { ...state, green: action.amount };
+    case 'blue':
+      return { ...state, blue: action.amount };
+    default:
+      return state;
+  }
+};
+
 const SquareScreen = () => {
-    const [colors, setColors] = useState({
-      red: 0,
-      green: 0,
-      blue: 0
-    });
-    const { red, green, blue } = colors;
+    const [state, dispatch] = useReducer(reducer, { red: 0, green: 0, blue: 0 });
+    const { red, green, blue } = state;
     
     const onIncreaseColor = (color) => {
       const colorNameLowerCase = color.toLowerCase();
-      const currentColorValue = colors[colorNameLowerCase];
+      const currentColorValue = state[colorNameLowerCase];
       if ( currentColorValue + COLOR_INCREMENT > 255 || currentColorValue + COLOR_INCREMENT < 0 )
         return;
-      setColors({ ...colors, [colorNameLowerCase]: currentColorValue + COLOR_INCREMENT });
+      dispatch({ colorTOChange: colorNameLowerCase, amount: currentColorValue + COLOR_INCREMENT });
     };
     
     const onDecreaseColor = (color) => {
@@ -25,7 +34,7 @@ const SquareScreen = () => {
       const result = currentColorValue - COLOR_INCREMENT;
       if ( result > 255 || result < 0 )
         return;
-      setColors({ ...colors, [colorNameLowerCase]: result });
+      dispatch({ colorTOChange: colorNameLowerCase, amount: currentColorValue - COLOR_INCREMENT });
     };
     
     return (
